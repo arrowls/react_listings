@@ -1,25 +1,35 @@
-import logo from './logo.svg';
 import './App.css';
+import Listing from "./components/Listing";
+import {useState, useEffect} from "react";
 
 function App() {
+  const [listings, updateListings] = useState([]);
+
+  useEffect(() => {
+    let isMounted = true;
+    getData().then((res) => {
+      if (isMounted) {
+        updateListings(res);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Listing items={listings} />
     </div>
   );
+}
+
+function getData() {
+  return new Promise(async (resolve) => {
+    const data = await fetch('./data.json');
+    const arr = await data.json();
+    resolve(arr);
+  })
 }
 
 export default App;
